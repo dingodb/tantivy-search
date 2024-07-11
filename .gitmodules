@@ -15,7 +15,7 @@
 	url = https://github.com/google/googletest
 [submodule "contrib/tantivy"]
 	path = contrib/tantivy
-	url = https://github.com/quickwit-oss/tantivy
+	url = https://github.com/dingodb/tantivy
 [submodule "contrib/cang-jie"]
 	path = contrib/cang-jie
 	url = https://github.com/ketor/cang-jie
