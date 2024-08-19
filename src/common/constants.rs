@@ -17,12 +17,14 @@ use once_cell::sync::OnceCell;
 use roaring::RoaringBitmap;
 use std::sync::Arc;
 use std::sync::Mutex;
+use tantivy::DateTime;
 
 use super::converter::Converter;
 use super::converter::CxxElementStrategy;
 use super::converter::CxxVectorStrategy;
 use super::converter::CxxVectorStringStrategy;
 use super::converter::CxxVectorStringToBytesStrategy;
+use super::converter::CxxVectorStringToDateTimeStrategy;
 
 // Cache queries results.
 // The cache's key is composed of reader.address, query_str, index_directory, use_regex.
@@ -67,6 +69,11 @@ pub static CXX_VECTOR_STRING_CONERTER: Lazy<
 pub static CXX_VECTOR_STRING_TO_BYTES_CONERTER: Lazy<
     Converter<CxxVector<CxxString>, Vec<Vec<u8>>, CxxVectorStringToBytesStrategy>,
 > = Lazy::new(|| Converter::new(CxxVectorStringToBytesStrategy));
+
+/// Convert 'CxxVector<CxxString>' to 'Vec<DateTime>'
+pub static CXX_VECTOR_STRING_TO_DATE_CONERTER: Lazy<
+    Converter<CxxVector<CxxString>, Vec<DateTime>, CxxVectorStringToDateTimeStrategy>,
+> = Lazy::new(|| Converter::new(CxxVectorStringToDateTimeStrategy));
 
 /// Convert 'CxxVector<T> to Vec<T>'
 pub fn cxx_vector_converter<T>() -> Converter<CxxVector<T>, Vec<T>, CxxVectorStrategy<T>>

@@ -4,6 +4,10 @@ use cxx::{vector::VectorElement, CxxString, CxxVector};
 
 use super::errors::CxxConvertError;
 
+use tantivy::DateTime;
+use time::format_description::well_known::Rfc3339;
+use time::OffsetDateTime;
+
 pub trait ConvertStrategy<T, U> {
     fn convert(&self, item: &T) -> Result<U, CxxConvertError>;
 }
@@ -78,6 +82,30 @@ impl ConvertStrategy<CxxVector<CxxString>, Vec<Vec<u8>>> for CxxVectorStringToBy
         items
             .iter()
             .map(|item| Ok(item.as_bytes().to_vec()))
+            .collect()
+    }
+}
+
+pub struct CxxVectorStringToDateTimeStrategy;
+
+impl ConvertStrategy<CxxVector<CxxString>, Vec<DateTime>> for CxxVectorStringToDateTimeStrategy {
+    fn convert(&self, items: &CxxVector<CxxString>) -> Result<Vec<DateTime>, CxxConvertError> {
+        items
+            .iter()
+            .map(|item| {
+                let str = match item.to_str() {
+                    Ok(str) => str,
+                    Err(e) => return Err(CxxConvertError::CxxVectorConvertError(e.to_string())),
+                };
+                match OffsetDateTime::parse(str, &Rfc3339) {
+                    Ok(t) => {
+                        return Ok(DateTime::from_utc(t));
+                    }
+                    Err(e) => {
+                        return Err(CxxConvertError::CxxDateVectorConvertError(e.to_string()));
+                    }
+                }
+            })
             .collect()
     }
 }

@@ -4,9 +4,11 @@ use crate::BoolResult;
 use crate::{common::constants::LOG_CALLBACK, ERROR};
 use crate::{
     cxx_vector_converter, CXX_STRING_CONERTER, CXX_VECTOR_STRING_CONERTER,
-    CXX_VECTOR_STRING_TO_BYTES_CONERTER,
+    CXX_VECTOR_STRING_TO_BYTES_CONERTER, CXX_VECTOR_STRING_TO_DATE_CONERTER,
 };
 use cxx::{CxxString, CxxVector};
+
+use tantivy::DateTime;
 
 pub fn ffi_create_index_with_parameter(
     index_path: &CxxString,
@@ -211,6 +213,8 @@ pub fn ffi_index_multi_type_column_docs(
     f64_column_docs: &CxxVector<f64>,
     bytes_column_names: &CxxVector<CxxString>,
     bytes_column_docs: &CxxVector<CxxString>,
+    date_column_names: &CxxVector<CxxString>,
+    date_column_docs: &CxxVector<CxxString>,
 ) -> BoolResult {
     let index_path: String = match CXX_STRING_CONERTER.convert(index_path) {
         Ok(path) => path,
@@ -388,15 +392,59 @@ pub fn ffi_index_multi_type_column_docs(
         };
     }
 
+    let date_column_names: Vec<String> = match CXX_VECTOR_STRING_CONERTER.convert(date_column_names)
+    {
+        Ok(names) => names,
+        Err(e) => {
+            ERROR!(function: "ffi_index_multi_column_docs", "Can't convert 'date_column_names', message: {}", e);
+            let error_msg_for_cxx: String =
+                format!("Can't convert 'date_column_names', message: {}", e);
+            return BoolResult {
+                result: false,
+                error_code: -1,
+                error_msg: error_msg_for_cxx,
+            };
+        }
+    };
+
+    let date_column_docs: Vec<DateTime> = match CXX_VECTOR_STRING_TO_DATE_CONERTER
+        .convert(date_column_docs)
+    {
+        Ok(docs) => docs,
+        Err(e) => {
+            ERROR!(function: "ffi_index_multi_column_docs", "Can't convert 'date_column_docs', message: {}", e);
+            let error_msg_for_cxx: String =
+                format!("Can't convert 'date_column_docs', message: {}", e);
+            return BoolResult {
+                result: false,
+                error_code: -1,
+                error_msg: error_msg_for_cxx,
+            };
+        }
+    };
+
+    if date_column_names.len() != date_column_docs.len() {
+        ERROR!(function: "ffi_index_multi_column_docs", "date_column_names size doesn't match date_column_docs size");
+        let error_msg_for_cxx: String =
+            "date_column_names size doesn't match date_column_docs size".to_string();
+        return BoolResult {
+            result: false,
+            error_code: -1,
+            error_msg: error_msg_for_cxx,
+        };
+    }
+
     if (text_column_names.len()
         + i64_column_names.len()
         + f64_column_names.len()
-        + bytes_column_names.len())
+        + bytes_column_names.len()
+        + date_column_docs.len())
         == 0
         || (text_column_docs.len()
             + i64_column_docs.len()
             + f64_column_docs.len()
-            + bytes_column_docs.len())
+            + bytes_column_docs.len()
+            + date_column_docs.len())
             == 0
     {
         ERROR!(function: "ffi_index_multi_column_docs", "column_names and column_docs can't be empty");
@@ -419,6 +467,8 @@ pub fn ffi_index_multi_type_column_docs(
         &f64_column_docs,
         &bytes_column_names,
         &bytes_column_docs,
+        &date_column_names,
+        &date_column_docs,
     ) {
         Ok(status) => BoolResult {
             result: status,
