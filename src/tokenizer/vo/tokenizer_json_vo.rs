@@ -111,6 +111,13 @@ pub enum ColumnTokenizer {
         #[serde(default = "default_indexed")]
         indexed: bool,
     },
+    #[serde(rename = "datetime")]
+    DateTime {
+        #[serde(default)]
+        store_doc: bool,
+        #[serde(default = "default_indexed")]
+        indexed: bool,
+    },
 }
 
 fn default_length_limit() -> usize {

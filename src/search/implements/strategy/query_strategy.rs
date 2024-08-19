@@ -1,5 +1,6 @@
 use std::sync::Arc;
 
+use rayon::range;
 use roaring::{RoaringBitmap, RoaringTreemap};
 use tantivy::query::{Query, QueryParser, QueryParserError, RegexQuery, TermQuery, TermSetQuery};
 use tantivy::schema::{Field, FieldType, IndexRecordOption, TextFieldIndexing};
@@ -338,6 +339,7 @@ pub struct BM25QueryStrategy<'a> {
 impl<'a> QueryStrategy<Vec<RowIdWithScore>> for BM25QueryStrategy<'a> {
     fn execute(&self, searcher: &Searcher) -> Result<Vec<RowIdWithScore>, IndexSearcherError> {
         let schema: Schema = searcher.index().schema();
+        let filed_num = schema.num_fields();
 
         let fields: Vec<Field> = match self.column_names.is_empty() {
             true => schema
@@ -440,7 +442,6 @@ pub struct BM25QueryStrategy64<'a> {
 impl<'a> QueryStrategy<Vec<RowIdWithScore>> for BM25QueryStrategy64<'a> {
     fn execute(&self, searcher: &Searcher) -> Result<Vec<RowIdWithScore>, IndexSearcherError> {
         let schema: Schema = searcher.index().schema();
-
         let fields: Vec<Field> = match self.column_names.is_empty() {
             true => schema
                 .fields()
@@ -464,21 +465,21 @@ impl<'a> QueryStrategy<Vec<RowIdWithScore>> for BM25QueryStrategy64<'a> {
                     },
                     Err(e) => {
                         let error: IndexSearcherError = IndexSearcherError::TantivyError(e);
-                        ERROR!(function:"BM25QueryStrategy", "{}", error);
+                        ERROR!(function:"BM25QueryStrategy64", "{}", error);
                         return false;
                     }
                 })
                 .map(|col_name| {
                     schema.get_field(col_name).map_err(|e| {
                         let error: IndexSearcherError = IndexSearcherError::TantivyError(e);
-                        ERROR!(function:"BM25QueryStrategy", "{}", error);
+                        ERROR!(function:"BM25QueryStrategy64", "{}", error);
                         error
                     })
                 })
                 .collect::<Result<Vec<Field>, IndexSearcherError>>()?,
         };
 
-        INFO!(function:"BM25QueryStrategy", "Fields: {:?}", fields);
+        INFO!(function:"BM25QueryStrategy64", "Fields: {:?}", fields);
 
         let mut top_docs_collector: TopDocsWithFilter64 =
             TopDocsWithFilter64::with_limit(*self.topk as usize)
@@ -499,13 +500,13 @@ impl<'a> QueryStrategy<Vec<RowIdWithScore>> for BM25QueryStrategy64<'a> {
         let query_parser: QueryParser = QueryParser::for_index(searcher.index(), fields);
         let text_query: Box<dyn Query> = query_parser.parse_query(self.sentence).map_err(
             |e: QueryParserError| {
-                ERROR!(function:"BM25QueryStrategy", "Error when parse: {}. {}", self.sentence, e);
+                ERROR!(function:"BM25QueryStrategy64", "Error when parse: {}. {}", self.sentence, e);
                 IndexSearcherError::QueryParserError(e.to_string())
             },
         )?;
 
         searcher.search(&text_query, &top_docs_collector).map_err(|e: TantivyError|{
-            ERROR!(function:"BM25QueryStrategy", "Error when execute: {}. {}", self.sentence, e);
+            ERROR!(function:"BM25QueryStrategy64", "Error when execute: {}. {}", self.sentence, e);
             IndexSearcherError::TantivyError(e)
         })
     }

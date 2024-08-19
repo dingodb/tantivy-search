@@ -76,6 +76,8 @@ pub enum CxxConvertError {
     CxxElementConvertError(String),
     #[error("Failed to convert CxxString to Rust String: {0}")]
     Utf8Error(#[from] Utf8Error),
+    #[error("Failed to convert cxx datetime variable. '{0}'")]
+    CxxDateVectorConvertError(String),
 }
 
 /// The library's error enum

@@ -10,6 +10,7 @@ pub enum TokenizerType {
     I64(String),
     F64(String),
     Bytes(String),
+    DateTime(String),
 }
 
 impl TokenizerType {
@@ -25,6 +26,7 @@ impl TokenizerType {
             TokenizerType::I64(name) => name,
             TokenizerType::F64(name) => name,
             TokenizerType::Bytes(name) => name,
+            TokenizerType::DateTime(name) => name,
         }
     }
 }
