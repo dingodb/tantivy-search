@@ -165,7 +165,7 @@ where
     let mode = String::deserialize(deserializer)?;
     if mode != "all" && mode != "default" && mode != "search" && mode != "unicode" {
         return Err(serde::de::Error::custom(format!(
-            "Invalid value for mode: {}. Expected 'all' or 'xxxxxxxxxxxxx'.",
+            "Invalid value for mode: {}. Expected 'all' or 'default' or 'search' or 'unicode'.",
             mode
         )));
     }
