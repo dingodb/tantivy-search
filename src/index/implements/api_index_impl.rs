@@ -81,8 +81,10 @@ pub fn create_index_with_parameter(
                         } else {
                             if !tokenizer_config.doc_store && tokenizer_config.doc_index {
                                 schema_builder.add_i64_field(&column_name, INDEXED);
-                            } else {
+                            } else if tokenizer_config.doc_store && !tokenizer_config.doc_index {
                                 schema_builder.add_i64_field(&column_name, STORED);
+                            } else {
+                                schema_builder.add_i64_field(&column_name, FAST);
                             }
                         }
                         INFO!(function:"create_index_with_parameter", "column_name:{}, field_options name: {}", column_name, "I64");
@@ -94,8 +96,10 @@ pub fn create_index_with_parameter(
                         } else {
                             if !tokenizer_config.doc_store && tokenizer_config.doc_index {
                                 schema_builder.add_f64_field(&column_name, INDEXED);
-                            } else {
+                            } else if tokenizer_config.doc_store && !tokenizer_config.doc_index {
                                 schema_builder.add_f64_field(&column_name, STORED);
+                            } else {
+                                schema_builder.add_f64_field(&column_name, FAST);
                             }
                         }
                         INFO!(function:"create_index_with_parameter", "column_name:{}, field_options name: {}", column_name, "F64");
@@ -107,8 +111,10 @@ pub fn create_index_with_parameter(
                         } else {
                             if !tokenizer_config.doc_store && tokenizer_config.doc_index {
                                 schema_builder.add_bytes_field(&column_name, INDEXED);
-                            } else {
+                            } else if tokenizer_config.doc_store && !tokenizer_config.doc_index {
                                 schema_builder.add_bytes_field(&column_name, STORED);
+                            } else {
+                                schema_builder.add_bytes_field(&column_name, FAST);
                             }
                         }
                         INFO!(function:"create_index_with_parameter", "column_name:{}, field_options name: {}", column_name, "Bytes");
@@ -120,8 +126,10 @@ pub fn create_index_with_parameter(
                         } else {
                             if !tokenizer_config.doc_store && tokenizer_config.doc_index {
                                 schema_builder.add_date_field(&column_name, INDEXED);
-                            } else {
+                            } else if tokenizer_config.doc_store && !tokenizer_config.doc_index {
                                 schema_builder.add_date_field(&column_name, STORED);
+                            } else {
+                                schema_builder.add_date_field(&column_name, FAST);
                             }
                         }
                         INFO!(function:"create_index_with_parameter", "column_name:{}, field_options name: {}", column_name, "Datetime");
