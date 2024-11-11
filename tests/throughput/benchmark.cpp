@@ -163,7 +163,7 @@ void run_benchmark(size_t idx,                                // iter id
             ffi_delete_row_ids(index_path, delete_row_ids);
           } else {
             // Step1. first bm25 search.
-            auto bm25_result = ffi_bm25_search(index_path, term, bm25_search_topk, {}, false);
+            auto bm25_result = ffi_bm25_search(index_path, term, bm25_search_topk, {}, false, false);
             const auto &result = bm25_result.result;
             std::vector<uint64_t> row_ids;
             for (size_t i = 0; i < result.size(); i++) row_ids.push_back(static_cast<uint64_t>(result[i].row_id));
@@ -172,7 +172,7 @@ void run_benchmark(size_t idx,                                // iter id
               ffi_delete_row_ids(index_path, row_ids);
               if (verify_delete_correct) {
                 // Step3. research for verify result.
-                auto bm_25result_after_delete = ffi_bm25_search(index_path, term, bm25_search_topk, {}, false);
+                auto bm_25result_after_delete = ffi_bm25_search(index_path, term, bm25_search_topk, {}, false, false);
                 const auto &result_after_delete = bm_25result_after_delete.result;
 
                 std::vector<uint64_t> row_ids_after_delete;

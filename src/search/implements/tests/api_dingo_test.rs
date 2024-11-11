@@ -229,6 +229,7 @@ mod tests {
             0,
             need_docs,
             column_names,
+            false,
         )
         .unwrap();
         let mut processed: Vec<DocsWithScore> = res

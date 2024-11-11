@@ -162,6 +162,7 @@ mod tests {
             end_id: &0,
             need_doc: &false,
             column_names: &vec![],
+            query_unlimited: &false,
         };
         let query_executor: QueryExecutor<'_, Vec<RowIdWithScore>> =
             QueryExecutor::new(&bm25_strategy);
@@ -192,6 +193,7 @@ mod tests {
             end_id: &0,
             need_doc: &false,
             column_names: &create_3column_names(),
+            query_unlimited: &false,
         };
         let query_executor: QueryExecutor<'_, Vec<RowIdWithScore>> =
             QueryExecutor::new(&bm25_strategy);

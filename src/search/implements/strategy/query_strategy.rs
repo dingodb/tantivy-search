@@ -13,6 +13,7 @@ use crate::logger::logger_bridge::TantivySearchLogger;
 use crate::search::collector::row_id_bitmap_collector::RowIdRoaringCollector;
 use crate::search::collector::top_docs_with_bitmap_collector::TopDocsWithFilter;
 use crate::search::collector::top_docs_with_treemap_collector::TopDocsWithFilter64;
+use crate::search::collector::unlimited_docs_with_treemap_collector::UnlimitedDocsWithFilter64;
 use crate::search::utils::convert_utils::ConvertUtils;
 use crate::INFO;
 use crate::{common::errors::IndexSearcherError, ffi::RowIdWithScore, ERROR};
@@ -437,6 +438,7 @@ pub struct BM25QueryStrategy64<'a> {
     pub end_id: &'a u64,
     pub need_doc: &'a bool,
     pub column_names: &'a Vec<String>,
+    pub query_unlimited: &'a bool,
 }
 
 impl<'a> QueryStrategy<Vec<RowIdWithScore>> for BM25QueryStrategy64<'a> {
@@ -481,12 +483,40 @@ impl<'a> QueryStrategy<Vec<RowIdWithScore>> for BM25QueryStrategy64<'a> {
 
         INFO!(function:"BM25QueryStrategy64", "Fields: {:?}", fields);
 
+        if *self.query_unlimited {
+            let mut top_docs_collector: UnlimitedDocsWithFilter64 =
+                UnlimitedDocsWithFilter64::with_default()
+                    .with_searcher(searcher.clone())
+                    .with_text_fields(fields.clone())
+                    .with_stored_text(*self.need_doc);
+            if *self.query_with_filter {
+                let mut alive_bitmap: RoaringTreemap = RoaringTreemap::new();
+                alive_bitmap.extend(self.alived_ids);
+                top_docs_collector = top_docs_collector.with_alive(Arc::new(alive_bitmap));
+            }
+
+            if *self.query_with_id_range {
+                top_docs_collector = top_docs_collector.with_range((*self.start_id, *self.end_id));
+            }
+
+            let query_parser: QueryParser = QueryParser::for_index(searcher.index(), fields);
+            let text_query: Box<dyn Query> = query_parser.parse_query(self.sentence).map_err(
+                    |e: QueryParserError| {
+                        ERROR!(function:"BM25QueryStrategy64", "Error when parse: {}. {}", self.sentence, e);
+                        IndexSearcherError::QueryParserError(e.to_string())
+                    },
+                )?;
+
+            return searcher.search(&text_query, &top_docs_collector).map_err(|e: TantivyError|{
+                    ERROR!(function:"BM25QueryStrategy64", "Error when execute: {}. {}", self.sentence, e);
+                    IndexSearcherError::TantivyError(e)
+                });
+        }
         let mut top_docs_collector: TopDocsWithFilter64 =
             TopDocsWithFilter64::with_limit(*self.topk as usize)
                 .with_searcher(searcher.clone())
                 .with_text_fields(fields.clone())
                 .with_stored_text(*self.need_doc);
-
         if *self.query_with_filter {
             let mut alive_bitmap: RoaringTreemap = RoaringTreemap::new();
             alive_bitmap.extend(self.alived_ids);

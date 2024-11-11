@@ -2,9 +2,10 @@
 mod tests {
     use std::sync::Arc;
 
+    use crate::search::collector::unlimited_docs_with_treemap_collector::UnlimitedDocsWithFilter64;
     use crate::search::collector::top_docs_with_bitmap_collector::TopDocsWithFilter;
 
-    use roaring::RoaringBitmap;
+    use roaring::{RoaringBitmap, RoaringTreemap};
     use tantivy::merge_policy::LogMergePolicy;
     use tantivy::query::{Query, QueryParser};
     use tantivy::schema::{Field, Schema, FAST, INDEXED, STORED, TEXT};
@@ -312,5 +313,40 @@ mod tests {
             .search(&text_query, &top_docs_collector)
             .expect("Can't execute search.");
         assert_eq!(searched_results.len(), 0);
+    }
+
+    #[test]
+    fn test_unboundary_search() {
+        let temp_path = TempDir::new().expect("Can't create temp path");
+        let temp_path_str = temp_path.path().to_str().unwrap();
+        let (index_reader, _) = get_reader_and_writer_from_index_path(temp_path_str);
+
+        // Prepare variables for search.
+        let (text_field, _, text_query, index_searcher) =
+            extract_from_index_reader(index_reader.clone());
+
+        let mut top_docs_collector = UnlimitedDocsWithFilter64::default()
+            .with_searcher(index_searcher.clone())
+            .with_text_fields(vec![text_field])
+            .with_stored_text(false);
+
+        let mut alive_bitmap = RoaringTreemap::new();
+        alive_bitmap.extend(0..3);
+
+        // Not use alive bitmap
+        let searched_results = index_searcher
+            .search(&text_query, &top_docs_collector)
+            .expect("Can't execute search.");
+        // for item in &searched_results {
+        //     println!("row_id:{:?}, score:{:?}", item.row_id, item.score);
+        // }
+        assert_eq!(searched_results.len(), 2);
+
+        // Use alive bitmap
+        top_docs_collector = top_docs_collector.with_alive(Arc::new(alive_bitmap));
+        let searched_results = index_searcher
+            .search(&text_query, &top_docs_collector)
+            .expect("Can't execute search.");
+        assert_eq!(searched_results.len(), 1);
     }
 }

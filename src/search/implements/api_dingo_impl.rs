@@ -30,6 +30,7 @@ pub fn bm25_search_with_column_names(
     end_id: u64,
     need_doc: bool,
     column_names: &Vec<String>,
+    query_unlimited: bool,
 ) -> Result<Vec<RowIdWithScore>, TantivySearchError> {
     // Get index_reader_bridge from CACHE
     let index_reader_bridge: Arc<IndexReaderBridge> = FFI_INDEX_SEARCHER_CACHE
@@ -50,6 +51,7 @@ pub fn bm25_search_with_column_names(
         end_id: &end_id,
         need_doc: &need_doc,
         column_names: &column_names,
+        query_unlimited: &query_unlimited,
     };
 
     let query_executor: QueryExecutor<'_, Vec<RowIdWithScore>> =
