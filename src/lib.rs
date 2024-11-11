@@ -297,12 +297,14 @@ pub mod ffi {
         /// - `topk`: only return top k related results.
         /// - `u8_aived_bitmap`: alived rowIds given by u8 bitmap.
         /// - `query_with_filter`: whether use alived_bitmap or not.
+        /// - `query_unlimited`: return all search results.
         pub fn ffi_bm25_search(
             index_path: &CxxString,
             sentence: &CxxString,
             topk: u32,
             u8_aived_bitmap: &CxxVector<u8>,
             query_with_filter: bool,
+            query_unlimited: bool,
         ) -> BM25Result;
 
         /// Execute a regex query and return rowIds u8 bitmap.
@@ -315,6 +317,7 @@ pub mod ffi {
         /// - `query_with_id_range`: whether use id range or not, [start_id, end_id).
         /// - `start_id`: id range start.
         /// - `end_id`: id range end.
+        /// - `query_unlimited`: return all search results.
         pub fn ffi_bm25_search_filter_ids(
             index_path: &CxxString,
             sentence: &CxxString,
@@ -324,6 +327,7 @@ pub mod ffi {
             query_with_id_range: bool,
             start_id: u64,
             end_id: u64,
+            query_unlimited: bool,
         ) -> BM25Result;
 
         /// Execute a regex query and return rowIds u8 bitmap.
@@ -337,6 +341,7 @@ pub mod ffi {
         /// - `start_id`: id range start.
         /// - `end_id`: id range end.
         /// - `colunm_names`: for multi column search.
+        /// - `query_unlimited`: return all search results.
         pub fn ffi_bm25_search_with_column_names(
             index_path: &CxxString,
             sentence: &CxxString,
@@ -347,6 +352,7 @@ pub mod ffi {
             start_id: u64,
             end_id: u64,
             column_names: &CxxVector<CxxString>,
+            query_unlimited: bool,
         ) -> BM25Result;
 
         /// Get doc freq for current part.

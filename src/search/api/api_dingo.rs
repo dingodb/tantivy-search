@@ -19,6 +19,7 @@ pub fn ffi_bm25_search(
     topk: u32,
     u8_aived_bitmap: &CxxVector<u8>,
     query_with_filter: bool,
+    query_unlimited: bool,
 ) -> BM25Result {
     let index_path: String = match CXX_STRING_CONERTER.convert(index_path) {
         Ok(path) => path,
@@ -74,6 +75,7 @@ pub fn ffi_bm25_search(
         0,
         false,
         &column_names,
+        query_unlimited,
     ) {
         Ok(results) => {
             return BM25Result {
@@ -104,6 +106,7 @@ pub fn ffi_bm25_search_filter_ids(
     query_with_id_range: bool,
     start_id: u64,
     end_id: u64,
+    query_unlimited: bool,
 ) -> BM25Result {
     let index_path: String = match CXX_STRING_CONERTER.convert(index_path) {
         Ok(path) => path,
@@ -157,6 +160,7 @@ pub fn ffi_bm25_search_filter_ids(
         end_id,
         false,
         &column_names,
+        query_unlimited,
     ) {
         Ok(results) => {
             return BM25Result {
@@ -188,6 +192,7 @@ pub fn ffi_bm25_search_with_column_names(
     start_id: u64,
     end_id: u64,
     column_names: &CxxVector<CxxString>,
+    query_unlimited: bool,
 ) -> BM25Result {
     let index_path: String = match CXX_STRING_CONERTER.convert(index_path) {
         Ok(path) => path,
@@ -254,6 +259,7 @@ pub fn ffi_bm25_search_with_column_names(
         end_id,
         false,
         &column_names,
+        query_unlimited,
     ) {
         Ok(results) => {
             return BM25Result {

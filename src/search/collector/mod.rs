@@ -1,3 +1,4 @@
+pub mod unlimited_docs_with_treemap_collector;
 pub mod row_id_bitmap_collector;
 mod test;
 pub mod top_docs_with_bitmap_collector;
