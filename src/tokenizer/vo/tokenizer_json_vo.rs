@@ -96,6 +96,10 @@ pub enum ColumnTokenizer {
         store_doc: bool,
         #[serde(default = "default_indexed")]
         indexed: bool,
+        #[serde(default)]
+        fast: bool,
+        #[serde(default)]
+        coerce: bool,
     },
     #[serde(rename = "f64")]
     F64 {
@@ -103,6 +107,10 @@ pub enum ColumnTokenizer {
         store_doc: bool,
         #[serde(default = "default_indexed")]
         indexed: bool,
+        #[serde(default)]
+        fast: bool,
+        #[serde(default)]
+        coerce: bool,
     },
     #[serde(rename = "bytes")]
     Bytes {
@@ -110,6 +118,8 @@ pub enum ColumnTokenizer {
         store_doc: bool,
         #[serde(default = "default_indexed")]
         indexed: bool,
+        #[serde(default)]
+        fast: bool,
     },
     #[serde(rename = "datetime")]
     DateTime {
@@ -117,6 +127,8 @@ pub enum ColumnTokenizer {
         store_doc: bool,
         #[serde(default = "default_indexed")]
         indexed: bool,
+        #[serde(default)]
+        fast: bool,
     },
     #[serde(rename = "bool")]
     Bool {
@@ -124,6 +136,10 @@ pub enum ColumnTokenizer {
         store_doc: bool,
         #[serde(default = "default_indexed")]
         indexed: bool,
+        #[serde(default)]
+        fast: bool,
+        #[serde(default)]
+        coerce: bool,
     },
 }
 

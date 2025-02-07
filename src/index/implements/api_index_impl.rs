@@ -2,8 +2,10 @@ use std::collections::HashMap;
 use std::sync::Mutex;
 use std::{path::Path, sync::Arc};
 
+use tantivy::schema::BytesOptions;
 use tantivy::schema::DateOptions;
 use tantivy::schema::IndexRecordOption;
+use tantivy::schema::NumericOptions;
 use tantivy::schema::TextFieldIndexing;
 use tantivy::schema::TextOptions;
 use tantivy::schema::FAST;
@@ -76,67 +78,92 @@ pub fn create_index_with_parameter(
             if !tokenizer_config.is_text_field {
                 match tokenizer_config.tokenizer_type {
                     TokenizerType::I64(_) => {
-                        if tokenizer_config.doc_store && tokenizer_config.doc_index {
-                            schema_builder.add_i64_field(&column_name, STORED | INDEXED);
-                        } else {
-                            if !tokenizer_config.doc_store && tokenizer_config.doc_index {
-                                schema_builder.add_i64_field(&column_name, INDEXED);
-                            } else {
-                                schema_builder.add_i64_field(&column_name, STORED);
-                            }
+                        let mut numeric_options = NumericOptions::default();
+                        if tokenizer_config.doc_store {
+                            numeric_options = numeric_options.set_stored();
                         }
+                        if tokenizer_config.doc_index {
+                            numeric_options = numeric_options.set_fieldnorm();
+                            numeric_options = numeric_options.set_indexed();
+                        }
+                        if tokenizer_config.doc_fast {
+                            numeric_options = numeric_options.set_fast();
+                        }
+                        if tokenizer_config.doc_coerce {
+                            numeric_options = numeric_options.set_coerce();
+                        }
+                        schema_builder.add_i64_field(&column_name, numeric_options);
                         INFO!(function:"create_index_with_parameter", "column_name:{}, field_options name: {}", column_name, "I64");
                         continue;
                     }
                     TokenizerType::F64(_) => {
-                        if tokenizer_config.doc_store && tokenizer_config.doc_index {
-                            schema_builder.add_f64_field(&column_name, STORED | INDEXED);
-                        } else {
-                            if !tokenizer_config.doc_store && tokenizer_config.doc_index {
-                                schema_builder.add_f64_field(&column_name, INDEXED);
-                            } else {
-                                schema_builder.add_f64_field(&column_name, STORED);
-                            }
+                        let mut numeric_options = NumericOptions::default();
+                        if tokenizer_config.doc_store {
+                            numeric_options = numeric_options.set_stored();
                         }
+                        if tokenizer_config.doc_index {
+                            numeric_options = numeric_options.set_fieldnorm();
+                            numeric_options = numeric_options.set_indexed();
+                        }
+                        if tokenizer_config.doc_fast {
+                            numeric_options = numeric_options.set_fast();
+                        }
+                        if tokenizer_config.doc_coerce {
+                            numeric_options = numeric_options.set_coerce();
+                        }
+                        schema_builder.add_f64_field(&column_name, numeric_options);
                         INFO!(function:"create_index_with_parameter", "column_name:{}, field_options name: {}", column_name, "F64");
                         continue;
                     }
                     TokenizerType::Bytes(_) => {
-                        if tokenizer_config.doc_store && tokenizer_config.doc_index {
-                            schema_builder.add_bytes_field(&column_name, STORED | INDEXED);
-                        } else {
-                            if !tokenizer_config.doc_store && tokenizer_config.doc_index {
-                                schema_builder.add_bytes_field(&column_name, INDEXED);
-                            } else {
-                                schema_builder.add_bytes_field(&column_name, STORED);
-                            }
+                        let mut bytes_options = BytesOptions::default();
+                        if tokenizer_config.doc_store {
+                            bytes_options = bytes_options.set_stored();
                         }
+                        if tokenizer_config.doc_index {
+                            bytes_options = bytes_options.set_fieldnorms();
+                            bytes_options = bytes_options.set_indexed();
+                        }
+                        if tokenizer_config.doc_fast {
+                            bytes_options = bytes_options.set_fast();
+                        }
+
+                        schema_builder.add_bytes_field(&column_name, bytes_options);
                         INFO!(function:"create_index_with_parameter", "column_name:{}, field_options name: {}", column_name, "Bytes");
                         continue;
                     }
                     TokenizerType::DateTime(_) => {
-                        if tokenizer_config.doc_store && tokenizer_config.doc_index {
-                            schema_builder.add_date_field(&column_name, STORED | INDEXED);
-                        } else {
-                            if !tokenizer_config.doc_store && tokenizer_config.doc_index {
-                                schema_builder.add_date_field(&column_name, INDEXED);
-                            } else {
-                                schema_builder.add_date_field(&column_name, STORED);
-                            }
+                        let mut date_options: DateOptions = DateOptions::default();
+                        if tokenizer_config.doc_store {
+                            date_options = date_options.set_stored();
                         }
+                        if tokenizer_config.doc_index {
+                            date_options = date_options.set_fieldnorm();
+                            date_options = date_options.set_indexed();
+                        }
+                        if tokenizer_config.doc_fast {
+                            date_options = date_options.set_fast();
+                        }
+                        schema_builder.add_date_field(&column_name, date_options);
                         INFO!(function:"create_index_with_parameter", "column_name:{}, field_options name: {}", column_name, "Datetime");
                         continue;
                     }
                     TokenizerType::Bool(_) => {
-                        if tokenizer_config.doc_store && tokenizer_config.doc_index {
-                            schema_builder.add_bool_field(&column_name, STORED | INDEXED);
-                        } else {
-                            if !tokenizer_config.doc_store && tokenizer_config.doc_index {
-                                schema_builder.add_bool_field(&column_name, INDEXED);
-                            } else {
-                                schema_builder.add_bool_field(&column_name, STORED);
-                            }
+                        let mut numeric_options = NumericOptions::default();
+                        if tokenizer_config.doc_store {
+                            numeric_options = numeric_options.set_stored();
                         }
+                        if tokenizer_config.doc_index {
+                            numeric_options = numeric_options.set_fieldnorm();
+                            numeric_options = numeric_options.set_indexed();
+                        }
+                        if tokenizer_config.doc_fast {
+                            numeric_options = numeric_options.set_fast();
+                        }
+                        if tokenizer_config.doc_coerce {
+                            numeric_options = numeric_options.set_coerce();
+                        }
+                        schema_builder.add_bool_field(&column_name, numeric_options);
                         INFO!(function:"create_index_with_parameter", "column_name:{}, field_options name: {}", column_name, "Bool");
                         continue;
                     }

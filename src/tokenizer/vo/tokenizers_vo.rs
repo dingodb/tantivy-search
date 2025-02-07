@@ -8,6 +8,8 @@ pub struct TokenizerConfig {
     pub doc_store: bool,
     pub doc_index: bool,
     pub is_text_field: bool,
+    pub doc_fast: bool,
+    pub doc_coerce: bool,
 }
 
 impl TokenizerConfig {
@@ -18,16 +20,26 @@ impl TokenizerConfig {
             doc_store: stored,
             doc_index: true,
             is_text_field: true,
+            doc_fast: false,
+            doc_coerce: false,
         }
     }
 
-    pub fn new_non_text(tokenizer_type: TokenizerType, stored: bool, indexed: bool) -> Self {
+    pub fn new_non_text(
+        tokenizer_type: TokenizerType,
+        stored: bool,
+        indexed: bool,
+        fast: bool,
+        coerce: bool,
+    ) -> Self {
         Self {
             tokenizer_type: tokenizer_type.clone(),
             text_analyzer: TextAnalyzer::default(),
             doc_store: stored,
             doc_index: indexed,
             is_text_field: false,
+            doc_fast: fast,
+            doc_coerce: coerce,
         }
     }
 }

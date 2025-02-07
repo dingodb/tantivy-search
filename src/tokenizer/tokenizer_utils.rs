@@ -337,43 +337,76 @@ impl TokenizerUtils {
                     );
                     tokenizer_map.insert(col_name.to_string(), tokenizer_config);
                 }
-                ColumnTokenizer::I64 { store_doc, indexed } => {
+                ColumnTokenizer::I64 {
+                    store_doc,
+                    indexed,
+                    fast,
+                    coerce,
+                } => {
                     let tokenizer_config = TokenizerConfig::new_non_text(
                         TokenizerType::I64("i64".to_string()),
                         *store_doc,
                         *indexed,
+                        *fast,
+                        *coerce,
                     );
                     tokenizer_map.insert(col_name.to_string(), tokenizer_config);
                 }
-                ColumnTokenizer::F64 { store_doc, indexed } => {
+                ColumnTokenizer::F64 {
+                    store_doc,
+                    indexed,
+                    fast,
+                    coerce,
+                } => {
                     let tokenizer_config = TokenizerConfig::new_non_text(
                         TokenizerType::F64("f64".to_string()),
                         *store_doc,
                         *indexed,
+                        *fast,
+                        *coerce,
                     );
                     tokenizer_map.insert(col_name.to_string(), tokenizer_config);
                 }
-                ColumnTokenizer::Bytes { store_doc, indexed } => {
+                ColumnTokenizer::Bytes {
+                    store_doc,
+                    indexed,
+                    fast,
+                } => {
                     let tokenizer_config = TokenizerConfig::new_non_text(
                         TokenizerType::Bytes("bytes".to_string()),
                         *store_doc,
                         *indexed,
+                        *fast,
+                        false,
                     );
                     tokenizer_map.insert(col_name.to_string(), tokenizer_config);
                 }
-                ColumnTokenizer::DateTime { store_doc, indexed } => {
+                ColumnTokenizer::DateTime {
+                    store_doc,
+                    indexed,
+                    fast,
+                } => {
                     let tokenizer_config = TokenizerConfig::new_non_text(
                         TokenizerType::DateTime("datetime".to_string()),
                         *store_doc,
                         *indexed,
+                        *fast,
+                        false,
                     );
                     tokenizer_map.insert(col_name.to_string(), tokenizer_config);
                 }
-                ColumnTokenizer::Bool { store_doc, indexed } => {
+                ColumnTokenizer::Bool {
+                    store_doc,
+                    indexed,
+                    fast,
+                    coerce,
+                } => {
                     let tokenizer_config = TokenizerConfig::new_non_text(
                         TokenizerType::Bool("bool".to_string()),
                         *store_doc,
                         *indexed,
+                        *fast,
+                        *coerce,
                     );
                     tokenizer_map.insert(col_name.to_string(), tokenizer_config);
                 }
