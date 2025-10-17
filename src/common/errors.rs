@@ -78,6 +78,8 @@ pub enum CxxConvertError {
     Utf8Error(#[from] Utf8Error),
     #[error("Failed to convert cxx datetime variable. '{0}'")]
     CxxDateVectorConvertError(String),
+    #[error("Failed to convert cxx boolean variable. '{0}'")]
+    CxxBoolVectorConvertError(String),
 }
 
 /// The library's error enum

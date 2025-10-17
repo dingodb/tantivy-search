@@ -820,13 +820,16 @@ struct Statistics final {
 // - `bytes_column_docs`: align with column_names.
 // - `date_column_names`: align with column_docs.
 // - `date_column_docs`: align with column_names.
+// - `bool_column_names`: align with column_docs.
+// - `bool_column_docs`: align with column_names.
 ::BoolResult ffi_index_multi_type_column_docs(
     ::std::string const &index_path, ::std::uint64_t row_id, ::std::vector<::std::string> const &text_column_names,
     ::std::vector<::std::string> const &text_column_docs, ::std::vector<::std::string> const &i64_column_names,
     ::std::vector<::std::int64_t> const &i64_column_docs, ::std::vector<::std::string> const &f64_column_names,
     ::std::vector<double> const &f64_column_docs, ::std::vector<::std::string> const &bytes_column_names,
     ::std::vector<::std::string> const &bytes_column_docs, ::std::vector<::std::string> const &date_column_names,
-    ::std::vector<::std::string> const &date_column_docs) noexcept;
+    ::std::vector<::std::string> const &date_column_docs, ::std::vector<::std::string> const &bool_column_names,
+    ::std::vector<::std::string> const &bool_column_docs) noexcept;
 
 // Delete a group of rowIds.
 // arguments:
