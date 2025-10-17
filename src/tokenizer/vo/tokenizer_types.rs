@@ -11,6 +11,7 @@ pub enum TokenizerType {
     F64(String),
     Bytes(String),
     DateTime(String),
+    Bool(String),
 }
 
 impl TokenizerType {
@@ -27,6 +28,7 @@ impl TokenizerType {
             TokenizerType::F64(name) => name,
             TokenizerType::Bytes(name) => name,
             TokenizerType::DateTime(name) => name,
+            TokenizerType::Bool(name) => name,
         }
     }
 }

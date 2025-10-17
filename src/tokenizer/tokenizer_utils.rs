@@ -110,6 +110,10 @@ impl TokenizerUtils {
                 "`{}-{}` tokenizer is not text-based, no need to register",
                 column_name, tokenizer_name
             )),
+            TokenizerType::Bool(tokenizer_name) => Ok(format!(
+                "`{}-{}` tokenizer is not text-based, no need to register",
+                column_name, tokenizer_name
+            )),
             _ => Err(TokenizerUtilsError::UnsupportedTokenizerType(
                 tokenizer_type.name().to_string(),
             )),
@@ -360,6 +364,14 @@ impl TokenizerUtils {
                 ColumnTokenizer::DateTime { store_doc, indexed } => {
                     let tokenizer_config = TokenizerConfig::new_non_text(
                         TokenizerType::DateTime("datetime".to_string()),
+                        *store_doc,
+                        *indexed,
+                    );
+                    tokenizer_map.insert(col_name.to_string(), tokenizer_config);
+                }
+                ColumnTokenizer::Bool { store_doc, indexed } => {
+                    let tokenizer_config = TokenizerConfig::new_non_text(
+                        TokenizerType::Bool("bool".to_string()),
                         *store_doc,
                         *indexed,
                     );

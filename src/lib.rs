@@ -126,6 +126,8 @@ pub mod ffi {
         /// - `bytes_column_docs`: align with column_names.
         /// - `date_column_names`: align with column_docs.
         /// - `date_column_docs`: align with column_names.
+        /// - `bool_column_names`: align with column_docs.
+        /// - `bool_column_docs`: align with column_names.
         fn ffi_index_multi_type_column_docs(
             index_path: &CxxString,
             row_id: u64,
@@ -139,6 +141,8 @@ pub mod ffi {
             bytes_column_docs: &CxxVector<CxxString>,
             date_column_names: &CxxVector<CxxString>,
             date_column_docs: &CxxVector<CxxString>,
+            bool_column_names: &CxxVector<CxxString>,
+            bool_column_docs: &CxxVector<CxxString>,
         ) -> BoolResult;
 
         /// Delete a group of rowIds.

@@ -127,6 +127,19 @@ pub fn create_index_with_parameter(
                         INFO!(function:"create_index_with_parameter", "column_name:{}, field_options name: {}", column_name, "Datetime");
                         continue;
                     }
+                    TokenizerType::Bool(_) => {
+                        if tokenizer_config.doc_store && tokenizer_config.doc_index {
+                            schema_builder.add_bool_field(&column_name, STORED | INDEXED);
+                        } else {
+                            if !tokenizer_config.doc_store && tokenizer_config.doc_index {
+                                schema_builder.add_bool_field(&column_name, INDEXED);
+                            } else {
+                                schema_builder.add_bool_field(&column_name, STORED);
+                            }
+                        }
+                        INFO!(function:"create_index_with_parameter", "column_name:{}, field_options name: {}", column_name, "Bool");
+                        continue;
+                    }
                     _ => {
                         WARNING!(function:"create_index_with_parameter", "column_name:{}, tokenizer_type:{}, is_text_field:{}",
                             column_name, tokenizer_config.tokenizer_type.name(), tokenizer_config.is_text_field);
@@ -284,6 +297,8 @@ pub fn index_multi_type_column_docs(
     bytes_column_docs: &Vec<Vec<u8>>,
     date_column_names: &Vec<String>,
     date_column_docs: &Vec<DateTime>,
+    bool_column_names: &Vec<String>,
+    bool_column_docs: &Vec<bool>,
 ) -> Result<bool, TantivySearchError> {
     // Get index writer from CACHE
     let index_writer_bridge = FFI_INDEX_WRITER_CACHE
@@ -355,6 +370,17 @@ pub fn index_multi_type_column_docs(
                     TantivySearchError::TantivyError(e)
                 })?;
         doc.add_date(column_field, date_column_docs[column_idx].clone());
+        column_idx += 1;
+    }
+
+    // bool field
+    column_idx = 0;
+    for column_name in bool_column_names {
+        let column_field = schema.get_field(column_name).map_err(|e| {
+                        ERROR!(function: "index_multi_column_docs", "Failed to get {} field in schema: {}", column_name, e.to_string());
+                        TantivySearchError::TantivyError(e)
+                    })?;
+        doc.add_bool(column_field, bool_column_docs[column_idx].clone());
         column_idx += 1;
     }
 

@@ -23,6 +23,7 @@ use super::converter::Converter;
 use super::converter::CxxElementStrategy;
 use super::converter::CxxVectorStrategy;
 use super::converter::CxxVectorStringStrategy;
+use super::converter::CxxVectorStringToBoolStrategy;
 use super::converter::CxxVectorStringToBytesStrategy;
 use super::converter::CxxVectorStringToDateTimeStrategy;
 
@@ -74,6 +75,11 @@ pub static CXX_VECTOR_STRING_TO_BYTES_CONERTER: Lazy<
 pub static CXX_VECTOR_STRING_TO_DATE_CONERTER: Lazy<
     Converter<CxxVector<CxxString>, Vec<DateTime>, CxxVectorStringToDateTimeStrategy>,
 > = Lazy::new(|| Converter::new(CxxVectorStringToDateTimeStrategy));
+
+/// Convert 'CxxVector<CxxString>' to 'Vec<bool>'
+pub static CXX_VECTOR_STRING_TO_BOOL_CONERTER: Lazy<
+    Converter<CxxVector<CxxString>, Vec<bool>, CxxVectorStringToBoolStrategy>,
+> = Lazy::new(|| Converter::new(CxxVectorStringToBoolStrategy));
 
 /// Convert 'CxxVector<T> to Vec<T>'
 pub fn cxx_vector_converter<T>() -> Converter<CxxVector<T>, Vec<T>, CxxVectorStrategy<T>>

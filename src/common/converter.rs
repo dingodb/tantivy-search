@@ -110,6 +110,30 @@ impl ConvertStrategy<CxxVector<CxxString>, Vec<DateTime>> for CxxVectorStringToD
     }
 }
 
+pub struct CxxVectorStringToBoolStrategy;
+
+impl ConvertStrategy<CxxVector<CxxString>, Vec<bool>> for CxxVectorStringToBoolStrategy {
+    fn convert(&self, items: &CxxVector<CxxString>) -> Result<Vec<bool>, CxxConvertError> {
+        items
+            .iter()
+            .map(|item| {
+                let str = match item.to_str() {
+                    Ok(str) => str,
+                    Err(e) => return Err(CxxConvertError::CxxVectorConvertError(e.to_string())),
+                };
+                match str.parse::<bool>() {
+                    Ok(t) => {
+                        return Ok(t);
+                    }
+                    Err(e) => {
+                        return Err(CxxConvertError::CxxBoolVectorConvertError(e.to_string()));
+                    }
+                }
+            })
+            .collect()
+    }
+}
+
 pub struct Converter<T, U, S>
 where
     S: ConvertStrategy<T, U>,
